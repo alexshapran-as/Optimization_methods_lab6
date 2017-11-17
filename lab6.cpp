@@ -21,7 +21,7 @@ int main()
 	simplex_method(c,b,a); // Решаем ПЗ ЛП с помощью симплекс метода 
 	set_new_data(c,b,a); // Меняем данные ПЗ ЛП на данные ДЗ ЛП
 	simplex_method(c,b,a); // Решаем ДЗ ЛП с помощью симплекс метода 
-	calculation_of_criteria(a);
+	calculation_of_criteria(a); // Вычисляем критерии игры
 
 	
 	cout << endl << endl;

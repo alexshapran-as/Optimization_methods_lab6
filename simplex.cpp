@@ -486,8 +486,8 @@ void calculation_of_criteria(std::vector<std::vector<double>> a)
 	using std::cout;
 	using std::endl;
 	using std::setw;
-	std::multimap<double, unsigned int> sum;
-	std::vector<unsigned int> a_strategy;
+	std::multimap<double, unsigned int> sum; // Сумма для критерия Бернулли
+	std::vector<unsigned int> a_strategy; // Стратегии ai
 
 	cout << endl << endl << "		Критерий Бернулли:" << endl;
 	for (unsigned int i = {0}; i < x_strategy.size(); ++i)
@@ -495,9 +495,9 @@ void calculation_of_criteria(std::vector<std::vector<double>> a)
 		double temp_sum = {0.0};
 		for (unsigned int j = {0}; j < y_strategy.size(); ++j)
 		{
-			temp_sum += a[i][j];
+			temp_sum += a[i][j]; // Находим сумму Cij
 		}
-		sum.insert(std::pair<double, unsigned int>((1. / y_strategy.size()) * temp_sum, i + 1));
+		sum.insert(std::pair<double, unsigned int>((1. / y_strategy.size()) * temp_sum, i + 1)); // Добавляем результат в multimap sum, со значением индекса эл-та
 	}
 	cout << endl;
 	
@@ -517,8 +517,8 @@ void calculation_of_criteria(std::vector<std::vector<double>> a)
 	temp_array = a;
 	for (unsigned int i = {0}; i < x_strategy.size(); ++i)
 	{
-		std::sort(temp_array[i].begin(), temp_array[i].end());
-		mins.insert(std::pair<double, unsigned int>(temp_array[i][0], i + 1));
+		std::sort(temp_array[i].begin(), temp_array[i].end()); // Сортировка матрицы - эл-ты в первом столбце - это минимальные эл-ты в строке
+		mins.insert(std::pair<double, unsigned int>(temp_array[i][0], i + 1)); // Добавляем эти элементы в mins с учетом их индексов 
 	}
 	cout << endl << "Пессимистическая стратегия (критерий Вальда) определяет выбор a" 
 	<< (--mins.end())->second << " (Нижняя цена игры равна " << (--mins.end())->first 
@@ -529,7 +529,7 @@ void calculation_of_criteria(std::vector<std::vector<double>> a)
 	std::multimap<double, unsigned int> maxs;
 	for (unsigned int i = {0}; i < x_strategy.size(); ++i)
 	{
-		maxs.insert(std::pair<double, unsigned int>(temp_array[i][temp_array[i].size() - 1], i + 1));
+		maxs.insert(std::pair<double, unsigned int>(temp_array[i][temp_array[i].size() - 1], i + 1)); // Эл-ты в последнем столбце указанной выше матрице будут максимальными  
 	}
 	cout << endl << "Оптимистическая стратегия соответствует выбору a" 
 	<< (--maxs.end())->second << " (максимально возможный выигрыш " << (--maxs.end())->first 
@@ -540,6 +540,7 @@ void calculation_of_criteria(std::vector<std::vector<double>> a)
 	std::multimap<double, unsigned int> temp_maxs;
 	for (unsigned int i = {0}; i < x_strategy.size(); ++i)
 	{
+		// Вычисление критерия, матрица уже отсортирована как необходимо
 		temp_maxs.insert(std::pair<double, unsigned int>(alpha*temp_array[i][0] + (1 - alpha)*temp_array[i][temp_array[i].size() - 1], i + 1));
 	}
 	cout << endl << "По этому критерию наилучшая стратегия — a" << (--temp_maxs.end())->second
@@ -559,18 +560,18 @@ void calculation_of_criteria(std::vector<std::vector<double>> a)
 	{
 		for (unsigned int j = {0}; j < x_strategy.size(); ++j)
 		{
-			temp_r_array[i][j] =  r_array[j][i];
+			temp_r_array[i][j] =  r_array[j][i]; // Транспонирование исходной матрицы, чтобы отсортировать столбцы
 		}
 	}
 	for (unsigned int i = {0}; i < y_strategy.size(); ++i)
 	{
-		std::sort(temp_r_array[i].begin(), temp_r_array[i].end());
+		std::sort(temp_r_array[i].begin(), temp_r_array[i].end()); // Сама сортировка строк, которые в исходной матрице явл-ся столбцами
 	}
 	for (unsigned int i = {0}; i < x_strategy.size(); ++i)
 	{
 		for (unsigned int j = {0}; j < y_strategy.size(); ++j)
 		{
-			r_array[i][j] = temp_r_array[j][temp_r_array[j].size() - 1] - r_array[i][j];
+			r_array[i][j] = temp_r_array[j][temp_r_array[j].size() - 1] - r_array[i][j]; // Вычисление рисков
 		}
 	}
 	cout << endl << "Таблица рисков имеет вид:" << endl << endl;
@@ -587,9 +588,10 @@ void calculation_of_criteria(std::vector<std::vector<double>> a)
 			cout << setw(12) << r_array[i][j];
 		}
 	}
-	mins.clear();
+	mins.clear(); // Очищаем mins для нового использования
 	for (unsigned int i = {0}; i < x_strategy.size(); ++i)
 	{
+		// Поиск результатов для формулы min_i(max_j(max_i(Cij) - Cij)))
 		std::sort(r_array[i].begin(), r_array[i].end());
 		mins.insert(std::pair<double, unsigned int>(r_array[i][r_array[i].size() - 1], i + 1));
 	}
@@ -597,11 +599,11 @@ void calculation_of_criteria(std::vector<std::vector<double>> a)
 	<< " (так как для этой стратегии min_i(max_j(max_i(Cij) - Cij))) = " << (mins.begin())->first 
 	<< ")." << endl;
 	a_strategy.push_back((mins.begin())->second);
-	std::sort(a_strategy.begin(), a_strategy.end());
-	std::map<unsigned int, unsigned int> a_strg_count;
+	std::sort(a_strategy.begin(), a_strategy.end()); // Сортируем стратегии, чтобы их было удобно подсчитывать
+	std::map<unsigned int, unsigned int> a_strg_count; // map для подсчета этих стратегий
 	unsigned int j = {0};
 	auto it = a_strategy.begin();
-	for (unsigned int i = {0}; i < x_strategy.size(); ++i)
+	for (unsigned int i = {0}; i < x_strategy.size(); ++i) // Осуществление подсчета
 	{
 		j = {0};
 		for (; it != a_strategy.end(); ++it)

@@ -22,5 +22,5 @@ static std::vector<double> y_strategy; // Стратегии числовые д
 static std::vector<unsigned int> index; // Вектор индексов переменных
 static double g = {0.0}; // Минимальный выигрыш игрока A
 static double h = {0.0}; // Максимальный проигрыш игрока B
-const static double alpha = {0.5};
+const static double alpha = {0.5}; // Числовой параметр для критерия Гурвица
 #endif
